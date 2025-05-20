@@ -9,3 +9,12 @@
     height: 45px;
     padding-left: 260px;
 }
+.introtext{
+    font-size: 1.5rem;
+}
+.errortext{
+    color: red;
+}
+.maintext{
+    color: darkgreen;
+}

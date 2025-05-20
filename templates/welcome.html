@@ -2,13 +2,13 @@
 {% block title %}歡迎{% endblock %}
 {% block content %}
 <div class="container text-center mt-5">
-    <h1>歡迎 {{ username | add_stars }}</h1>
-    <h4 class="text">您已成功登入會員系統！</h4>
+    <h1 class = "mb-4 maintext">歡迎 {{ username | add_stars }}</h1>
+    <h4 class="mb-4 text">您已成功登入會員系統！</h4>
 </div>
 <div class="text-center">
-    <a href="{{ url_for('edit_profile', iid=iid) }}" class="btn btn-primary">修改基本資料</a>
+    <a href="{{ url_for('edit_profile', iid=iid) }}" class="btn btn-primary ">修改基本資料</a>
     <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ iid }}')">刪除使用者</a>
-    <a href="{{ url_for('index') }}" class="btn btn-primary">返回首頁</a>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">返回首頁</a>
 </div>
 <script>
 function confirmDelete(iid) {

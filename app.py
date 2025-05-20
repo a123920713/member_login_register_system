@@ -163,7 +163,7 @@ def edit_profile(iid):
             cursor.execute("SELECT username FROM members WHERE iid = ?", (iid,))
             username = cursor.fetchone()[0]
 
-        return render_template('welcome.html', username=f"★{username}★", iid=iid)
+        return render_template('welcome.html', username=f"{username}", iid=iid)
 
     # GET 方法，查詢使用者資料顯示表單
     with sqlite3.connect(DB_NAME) as conn:
