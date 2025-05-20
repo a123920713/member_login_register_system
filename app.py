@@ -43,15 +43,20 @@ def create_db(db_name: str)-> str:
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('base.html')
+    return render_template('index.html')
 
-@app.route('/login')
+@app.route('/login',methods=['GET', 'POST'])
 def login():
-    return "<h1>登入頁面（尚未實作）</h1>"
+    return render_template('login.html')
 
 @app.route('/register')
 def register():
-    return "<h1>註冊頁面（尚未實作）</h1>"
+    return render_template('register.html')
+
+@app.route('/welcome')
+def register():
+    return render_template('welcome.html')
+
 def main():
     check_db()
 

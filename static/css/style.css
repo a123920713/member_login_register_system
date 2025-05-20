@@ -1,0 +1,11 @@
+.input-lg {
+    font-size: 1.2rem;
+    height: 60px;
+    width: 60%;
+    margin: auto;
+}
+.form-label{
+    padding: 10px;
+    height: 45px;
+    padding-left: 260px;
+}

@@ -1,0 +1,31 @@
+<!-- templates/login.html -->
+{% extends "base.html" %}
+{% block title %}會員系統-註冊{% endblock %}
+{% block content %}
+<h1 class="text-center fs-1">會員註冊</h1>
+<form method="POST" action="{{ url_for('register') }}">
+    <div class="mb-3">
+        <label for="username" class="form-label fs-4">用戶名</label>
+        <input type="text" class="form-control input-lg" name="username" id="username" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label fs-4">電子郵件</label>
+        <input type="email" class="form-control input-lg" name="email" id="email" required>
+    </div>
+        <div class="mb-3">
+        <label for="password" class="form-label fs-4">密碼</label>
+        <input type="password" class="form-control input-lg" name="password" id="password" required>
+    </div>
+    <div class="mb-3">
+        <label for="telephone" class="form-label fs-4">手機</label>
+        <input type="text" class="form-control input-lg" name="telephone" id="telephone" required>
+    </div>
+        <div class="mb-3">
+        <label for="birthdate" class="form-label fs-4">出生年月日(YYYY-MM-DD)</label>
+        <input type="date" class="form-control input-lg" name="birthdate" id="birthdate" required>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary w-15">登入</button>
+    </div>
+</form>
+{% endblock %}
