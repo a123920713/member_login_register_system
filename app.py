@@ -1,7 +1,7 @@
 import sqlite3
 from flask import Flask, render_template, request,redirect
 
-app = Flask(__name__) # __name__ 代表目前執行的模組
+app = Flask(__name__)
 
 DB_NAME = 'D:/Web程式設計/member_login_register_system/membership.db'
 
@@ -62,7 +62,8 @@ def login():
                 return render_template('error.html', message="電子郵件或密碼錯誤")
             else:
                 username = user[1]
-                return render_template('welcome.html', username=f"★{username}★")
+                iid = user[0]
+                return redirect(f'/welcome/{iid}')
 
     return render_template('login.html')
 
@@ -105,9 +106,77 @@ def error():
     return render_template('error.html', message=message)
 
 
-@app.route('/welcome')
-def welcome():
-    return render_template('welcome.html')
+@app.route('/welcome/<int:iid>')
+def welcome(iid):
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT username FROM members WHERE iid = ?", (iid,))
+        result = cursor.fetchone()
+
+    if result:
+        username = result[0]
+        return render_template('welcome.html',iid=iid,username = username)
+    else:
+        return render_template('error.html', message="找不到使用者")
+
+@app.route('/delete/<int:iid>')
+def delete_user(iid):
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        # 刪除該會員
+        cursor.execute("DELETE FROM members WHERE iid = ?", (iid,))
+        conn.commit()
+    return redirect('/')
+
+@app.route('/edit_profile/<int:iid>', methods=['GET', 'POST'])
+def edit_profile(iid):
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        phone = request.form.get('phone', '').strip()
+        birthdate = request.form.get('birthdate', '').strip()
+
+        # 檢查空值
+        if not email or not password:
+            return render_template('error.html', message="請輸入電子郵件和密碼")
+
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+
+            # 檢查 email 是否被其他用戶使用
+            cursor.execute("SELECT * FROM members WHERE email = ? AND iid != ?", (email, iid))
+            email_in_use = cursor.fetchone()
+            if email_in_use:
+                return render_template('error.html', message="電子郵件已被使用")
+
+            # 更新使用者資料
+            cursor.execute('''
+                UPDATE members
+                SET email = ?, password = ?, phone = ?, birthdate = ?
+                WHERE iid = ?
+            ''', (email, password, phone, birthdate, iid))
+            conn.commit()
+
+        # 查出使用者名稱以便顯示歡迎頁
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT username FROM members WHERE iid = ?", (iid,))
+            username = cursor.fetchone()[0]
+
+        return render_template('welcome.html', username=f"★{username}★", iid=iid)
+
+    # GET 方法，查詢使用者資料顯示表單
+    with sqlite3.connect(DB_NAME) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM members WHERE iid = ?", (iid,))
+        user = cursor.fetchone()
+
+    return render_template('edit_profile.html', user=user)
+
+@app.template_filter('add_stars')
+def add_stars(s):
+    return f'★{s}★'
 
 def main():
     check_db()
