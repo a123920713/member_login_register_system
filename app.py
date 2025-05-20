@@ -1,4 +1,7 @@
 import sqlite3
+from flask import Flask, render_template, request
+
+app = Flask(__name__) # __name__ 代表目前執行的模組
 
 DB_NAME = 'D:/Web程式設計/member_login_register_system/membership.db'
 
@@ -38,6 +41,17 @@ def create_db(db_name: str)-> str:
         conn.commit()
     return f'資料表初始化成功'
 
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('base.html')
+
+@app.route('/login')
+def login():
+    return "<h1>登入頁面（尚未實作）</h1>"
+
+@app.route('/register')
+def register():
+    return "<h1>註冊頁面（尚未實作）</h1>"
 def main():
     check_db()
 
