@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,redirect
 
 app = Flask(__name__) # __name__ 代表目前執行的模組
 
@@ -47,14 +47,66 @@ def index():
 
 @app.route('/login',methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+
+        if not email or not password:
+            return render_template('error.html', message="請輸入電子郵件和密碼")
+
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM members WHERE email = ? AND password = ?", (email, password))
+            user = cursor.fetchone()
+            if not user:
+                return render_template('error.html', message="電子郵件或密碼錯誤")
+            else:
+                username = user[1]
+                return render_template('welcome.html', username=f"★{username}★")
+
     return render_template('login.html')
 
-@app.route('/register')
+@app.route('/register',methods=['GET', 'POST'])
 def register():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        phone = request.form.get('phone', '').strip()
+        birthdate = request.form.get('birthdate', '').strip()
+
+        # 檢查是否有空值
+        if not username or not email or not password:
+            return render_template('error.html', message="請輸入用戶名、電子郵件和密碼")
+
+        # 檢查用戶名是否已存在
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM members WHERE username = ?", (username,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                return render_template('error.html', message="用戶名已存在")
+
+            # 新增會員資料
+            cursor.execute("""
+                INSERT INTO members (username, email, password, phone, birthdate)
+                VALUES (?, ?, ?, ?, ?)
+            """, (username, email, password, phone, birthdate))
+            conn.commit()
+
+        return redirect('/login')
+
     return render_template('register.html')
 
+
+@app.route('/error')
+def error():
+    message = request.args.get('message', '發生錯誤')
+    return render_template('error.html', message=message)
+
+
 @app.route('/welcome')
-def register():
+def welcome():
     return render_template('welcome.html')
 
 def main():
